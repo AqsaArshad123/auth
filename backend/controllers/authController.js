@@ -38,13 +38,10 @@ export const loginUser=async(request,response)=>{
 
     try{
 const user=await User.findOne({email});
-if(!user){
-    return response.status(400).send('User not found');
-}
 
 const correctPassword= await bcrypt.compare(password, user.password);
 
-if (!correctPassword ){
+if (!user || !correctPassword ){
 return response.status(400).send('Invalid email or password');
 
 }
