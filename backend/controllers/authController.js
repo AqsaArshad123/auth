@@ -1,32 +1,9 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import {body,validationResult} from 'express-validator';
+import {validationResult} from 'express-validator';
 
 import { sendEmail } from '../utils/email.js';
-
-//validation
-export const validateSignup=[
-    body('name').notEmpty().withMessage('Name is required'),
-     body('email').isEmail().withMessage('Enter a valid email'),
-  body('password').isLength({ min: 8 }).withMessage('Password must be atleast 8 characters')
-    .matches(/\d/).withMessage('Password must contain a number')
-    .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter'),
-  body('contact').notEmpty().withMessage('Contact is required'),
-  body('gender').isIn(['male', 'female', 'other']).withMessage('Select a valid gender'),
-];
-
-export const validateLogin = [
-  body('email').isEmail().withMessage('Enter a valid email'),
-  body('password').notEmpty().withMessage('Password is required'),
-];
-
-export const validateNewPassword = [
-  body('newPassword').isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
-    .matches(/\d/).withMessage('Password must contain a number')
-    .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter')
-    .notEmpty().withMessage('New password is required'),
-  body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
-];
 
 //Signup
 export const newUser=async(request,response)=>{
@@ -53,12 +30,23 @@ const user=await User.create({
     name, email, password:hashedPassword, contact, gender
 });
 
-response.status(201).json({
+const token=jwt.sign(
+  {_id:user._id,
+    name:user.name,
+    email:user.email
+  },
+  process.env.JWT_SECRET,
+  {expiresIn:'1h'}
+);
+
+
+response.status(201).json({token,
+  user:{
     _id:user._id,
     name:user.name,
     email:user.email,
      contact: user.contact,
-      gender: user.gender,
+      gender: user.gender,}
 });
 
     } catch (error){
@@ -85,14 +73,13 @@ if (!user || !correctPassword ){
 return response.status(400).send('Invalid email or password');
 
 }
+const token = jwt.sign(
+            { _id: user._id, name: user.name, email: user.email },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
+        );
+  response.json({ token });
 
-response.json({
-    _id:user._id,
-    name:user.name,
-    email:user.email,
-     contact: user.contact,
-      gender: user.gender,
-});
     } catch(error){
         console.error(error.message);
 response.status(500).send('Server Error');
@@ -109,20 +96,18 @@ try{
         return response.status(404).send('User not found');
     }
 
-    response.json({
-_id:user._id,
-    name:user.name,
-    email:user.email,
-    contact: user.contact,
-      gender: user.gender,
-    });
-} catch (error){
-response.status(500).send('Server Error');
-}
-
-
+     response.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            contact: user.contact,
+            gender: user.gender,
+        });
+    } catch (error) {
+        console.error('Error in Userprofile:', error.message);
+        response.status(500).send('Server Error');
+    }
 };
-
 
 // Forget Password
 export const forgetPassword = async (request, response) => {
