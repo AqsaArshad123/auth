@@ -96,7 +96,8 @@ try{
         return response.status(404).send('User not found');
     }
 
-     response.json({
+    
+        response.json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -108,7 +109,6 @@ try{
         response.status(500).send('Server Error');
     }
 };
-
 // Forget Password
 export const forgetPassword = async (request, response) => {
   const { email } = request.body;
@@ -131,11 +131,11 @@ export const forgetPassword = async (request, response) => {
     await sendEmail(user.email, 'Forget Password and Reset OTP', ` Hey user! You requested a password reset. Your OTP is  ${resetToken}`);
 
     response.send('Password reset OTP sent to email');
-  } catch (error) {
-    response.status(500).send('Server Error');
-  }
+    } catch (error) {
+        console.error('Error in forgetPassword:', error.message);
+        response.status(500).send('Server Error');
+    }
 };
-
 // Reset Password
 
 export const resetPassword = async (request, response) => {
