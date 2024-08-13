@@ -1,21 +1,31 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import connectDB from './config/db.js';
+import mongoose from 'mongoose';
 import authRoutes from './routes/authRoutes.js';
-
-
+import {errorHandler} from './middleware/errorHandler.js';
 
 dotenv.config();
 
-connectDB();
+const DB = process.env.MONGO_URI;
 
 const app=express();
 
 app.use(express.json());
 
-app.use('/api/auth',authRoutes);
+mongoose.connect(DB)
+    .then(() => {
+        console.log("DB Connection Successful!");
+    })
+    .catch((error) => {
+        console.error('Error in DB Connection:', error.message);
+        process.exit(1);
+    });
 
 
+app.use('/api',authRoutes);
+
+//Error Handler
+app.use(errorHandler);
 
 const PORT=process.env.PORT || 5000;
 

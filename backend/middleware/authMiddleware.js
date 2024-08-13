@@ -8,8 +8,7 @@ export const authMiddleware = (request, response, next) => {
     }
 
     try {
-        const userDetail = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET); // Bearer token
-        request.user = userDetail;
+        const userDetail = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET); 
         next();
     } catch (error) {
         response.status(400).send('Invalid Token');
