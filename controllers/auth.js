@@ -40,10 +40,7 @@ export const signup = async (request, response, next) => {
             token,
             user: {
                 _id: user._id,
-                name: user.name,
-                email: user.email,
-                contact: user.contact,
-                gender: user.gender
+                name: user.name
             }
         });
 
