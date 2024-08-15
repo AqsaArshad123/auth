@@ -8,11 +8,10 @@ export const authMiddleware = (request, response, next) => {
     }
 
     try {
-        const userDetail = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
+        const userDetail = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET); 
         request.user=userDetail;
         next();
     } catch (error) {
         response.status(400).send('Invalid Token');
     }
 };
-
