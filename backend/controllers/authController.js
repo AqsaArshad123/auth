@@ -1,17 +1,12 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
-import {validationResult} from 'express-validator';
+import { sendEmail } from '../utils/sendEmail.js';
 
-import { sendEmail } from '../utils/email.js';
+
 
 //Signup
-export const newUser=async(request,response)=>{
-
-    const errors=validationResult(request);
-if(!errors.isEmpty()){
-    return response.status(400).send({ errors: errors.array() });
-}
+export const newUser=async(request,response,next)=>{
 
     const {name,email,password,contact,gender}=request.body;
 
@@ -49,18 +44,13 @@ response.status(201).json({token,
       gender: user.gender,}
 });
 
-    } catch (error){
-        response.status(500).send('Server Error');
-    }
+    } catch (error) {
+    next(error); 
+  }
 };
 
 //Login
-export const loginUser=async(request,response)=>{
-  const errors = validationResult(request);
- if (!errors.isEmpty()) {
-    return response.status(400).send({ errors: errors.array() });
-  }
-
+export const loginUser=async(request,response,next)=>{
 
     const {email,password}=request.body;
 
@@ -80,23 +70,25 @@ const token = jwt.sign(
         );
   response.json({ token });
 
-    } catch(error){
-        console.error(error.message);
-response.status(500).send('Server Error');
-    }
+    } catch (error) {
+    next(error); 
+  }
 };
 
 
 //Profile
-export const Userprofile=async (request,response)=>{
-try{
-    const user=await User.findById(request.params.id);
+export const Userprofile = async (request, response,next) => {
+  const { id } = request.body;  
+
+  try {
+    const user = await User.findById(id);
 
     if(!user){
         return response.status(404).send('User not found');
     }
 
-     response.json({
+    
+        response.json({
             _id: user._id,
             name: user.name,
             email: user.email,
@@ -104,13 +96,12 @@ try{
             gender: user.gender,
         });
     } catch (error) {
-        console.error('Error in Userprofile:', error.message);
-        response.status(500).send('Server Error');
-    }
+    next(error); 
+  }
 };
 
 // Forget Password
-export const forgetPassword = async (request, response) => {
+export const forgetPassword = async (request, response,next) => {
   const { email } = request.body;
 
   try {
@@ -120,54 +111,60 @@ export const forgetPassword = async (request, response) => {
       return response.status(404).send('User not found');
     }
     //6-digit OTP
-    const resetToken = Math.floor(100000 + Math.random() * 900000).toString();
-    const resetTokenExpiration = Date.now() + 60000; 
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    user.resetToken = resetToken;
-    user.resetTokenExpiration = resetTokenExpiration;
+    //OTP encryption
+     const salt = await bcrypt.genSalt(10);
+    const encryptedOTP = await bcrypt.hash(otp, salt);
+  
+    const otpExpiration = Date.now() + 3600000; 
+
+    user.OTP = encryptedOTP;
+    user.OTPExpiration =otpExpiration;
     await user.save();
 
 
-    await sendEmail(user.email, 'Forget Password and Reset OTP', ` Hey user! You requested a password reset. Your OTP is  ${resetToken}`);
+    await sendEmail(user.email, 'Forget Password and Reset OTP', ` Hey user! You requested a password reset. Your OTP is  ${otp}`);
 
     response.send('Password reset OTP sent to email');
-  } catch (error) {
-    response.status(500).send('Server Error');
+    } catch (error) {
+    next(error); 
   }
 };
-
 // Reset Password
 
-export const resetPassword = async (request, response) => {
-  const { otp, newPassword } = request.body;
+export const resetPassword = async (request, response,next) => {
+  const { email, otp, newPassword } = request.body;
 
   try {
-    const errors = validationResult(request);
-    if (!errors.isEmpty()) {
-      return response.status(400).send({ errors: errors.array() });
+const user=await User.findOne({email});
+
+if(!user){
+  return response.status(404).send('User not found');
+}
+
+if (!user.OTP) {
+      return response.status(400).send('Invalid Request or no previous Forgot Password request exists');
     }
 
-    const user = await User.findOne({
-      resetToken: otp,
-      resetTokenExpiration: { $gt: Date.now() },
-    });
+//verifying OTP
+const otpMatch=await bcrypt.compare(otp,user.OTP);
+if(!otpMatch || Date.now()>user.OTPExpiration){
+  return response.status(400).send('Invalid or Expired OTP');
+}
 
-    if (!user) {
-      return response.status(400).send('Invalid or expired OTP');
-    }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
-    user.resetToken = undefined;
-    user.resetTokenExpiration = undefined;
+    user.OTP = undefined;
+    user.OTPExpiration = undefined;
 
     await user.save();
 
     response.send('Password has been reset');
 
   } catch (error) {
-    console.error('Error in resetPassword:', error.message);
-    response.status(500).send('Server Error');
+    next(error); 
   }
 };

@@ -1,4 +1,4 @@
-import {body} from 'express-validator';
+import {body,validationResult} from 'express-validator';
 
 
 //validation
@@ -24,3 +24,13 @@ export const validateNewPassword = [
     .notEmpty().withMessage('New password is required'),
   body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
 ];
+
+//Validation Result
+export const validateRequest = (request, response, next) => {
+  const errors = validationResult(request);
+  if (!errors.isEmpty()) {
+    return response.status(400).json({ errors: errors.array() });
+  }
+  next();
+};
+
