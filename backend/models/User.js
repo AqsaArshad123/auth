@@ -6,8 +6,8 @@ email:{type:String,required:true,unique:true},
 password:{type:String,required:true},
 contact: { type: String, required: true },
 gender: { type: String, required: true },
-OTP: String,
-OTPExpiration: Date,
+otp: String,
+otpExpiration: Date,
 });
 
 const User=mongoose.model('User',userSchema);
