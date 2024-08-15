@@ -10,6 +10,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
     from: '"Authenticatoin App" <auth@ethereal.email>',

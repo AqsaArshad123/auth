@@ -6,7 +6,7 @@ import { sendEmail } from '../utils/sendEmail.js';
 
 
 //Signup
-export const newUser=async(request,response,next)=>{
+export const signup=async(request,response,next)=>{
 
     const {name,email,password,contact,gender}=request.body;
 
@@ -14,7 +14,7 @@ export const newUser=async(request,response,next)=>{
         const alreadyExist=await User.findOne({email});
 
         if(alreadyExist){
-            return response.status(400).send('User already exists!');
+            return response.status(400).json({ message: 'User already exists!' });
         }
 
         //Hashing Techniques
@@ -50,7 +50,7 @@ response.status(201).json({token,
 };
 
 //Login
-export const loginUser=async(request,response,next)=>{
+export const login=async(request,response,next)=>{
 
     const {email,password}=request.body;
 
@@ -60,7 +60,7 @@ const user=await User.findOne({email});
 const correctPassword= await bcrypt.compare(password, user.password);
 
 if (!user || !correctPassword ){
-return response.status(400).send('Invalid email or password');
+return response.status(400).json({ message: 'Invalid email or password' });
 
 }
 const token = jwt.sign(
@@ -77,14 +77,14 @@ const token = jwt.sign(
 
 
 //Profile
-export const Userprofile = async (request, response,next) => {
+export const me = async (request, response,next) => {
   const { id } = request.body;  
 
   try {
     const user = await User.findById(id);
 
     if(!user){
-        return response.status(404).send('User not found');
+        return response.status(404).json({ message: 'User not found' });
     }
 
     
@@ -108,7 +108,7 @@ export const forgetPassword = async (request, response,next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return response.status(404).send('User not found');
+      return response.status(404).json({ message: 'User not found' });
     }
     //6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -119,14 +119,14 @@ export const forgetPassword = async (request, response,next) => {
   
     const otpExpiration = Date.now() + 3600000; 
 
-    user.OTP = encryptedOTP;
-    user.OTPExpiration =otpExpiration;
+    user.otp = encryptedOTP;
+    user.otpExpiration =otpExpiration;
     await user.save();
 
 
     await sendEmail(user.email, 'Forget Password and Reset OTP', ` Hey user! You requested a password reset. Your OTP is  ${otp}`);
 
-    response.send('Password reset OTP sent to email');
+    response.json({ message: 'Password reset OTP sent to email' });
     } catch (error) {
     next(error); 
   }
@@ -140,29 +140,30 @@ export const resetPassword = async (request, response,next) => {
 const user=await User.findOne({email});
 
 if(!user){
-  return response.status(404).send('User not found');
+  return response.status(404).json({ message: 'User not found' });
 }
 
-if (!user.OTP) {
-      return response.status(400).send('Invalid Request or no previous Forgot Password request exists');
+if (!user.otp) {
+      return response.status(400).json({
+        message: 'Invalid Request or no previous Forgot Password request exists',
+      });
     }
-
 //verifying OTP
-const otpMatch=await bcrypt.compare(otp,user.OTP);
-if(!otpMatch || Date.now()>user.OTPExpiration){
-  return response.status(400).send('Invalid or Expired OTP');
+const otpMatch=await bcrypt.compare(otp,user.otp);
+if(!otpMatch || Date.now()>user.otpExpiration){
+  return response.status(400).json({ message: 'Invalid or Expired OTP' });
 }
 
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
-    user.OTP = undefined;
-    user.OTPExpiration = undefined;
+    user.otp = undefined;
+    user.otpExpiration = undefined;
 
     await user.save();
 
-    response.send('Password has been reset');
+    response.json({ message: 'Password has been reset' });
 
   } catch (error) {
     next(error); 
