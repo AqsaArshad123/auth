@@ -1,15 +1,13 @@
 import nodemailer from 'nodemailer';
 
-
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  host: 'smtp.ethereal.email',
+  port: 587,
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
+    user: 'jacques.roob@ethereal.email',
+    pass: 'VSEfPw2SfGwaPv2wgJ'
+  }
 });
-
 
 export const sendEmail = async (to, subject, text) => {
   const mailOptions = {
@@ -21,5 +19,4 @@ export const sendEmail = async (to, subject, text) => {
 
   const info = await transporter.sendMail(mailOptions);
   console.log(`Message sent: ${info.messageId}`);
-
 };

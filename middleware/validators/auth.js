@@ -1,6 +1,5 @@
 import {body,validationResult} from 'express-validator';
 
-
 //validation
 export const validateSignup=[
     body('name').notEmpty().withMessage('Name is required'),
@@ -33,4 +32,3 @@ export const validateRequest = (request, response, next) => {
   }
   next();
 };
-
