@@ -5,7 +5,6 @@ import authRoutes from "./routes/auth.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 dotenv.config();
-
 const DB = process.env.MONGO_URI;
 const app = express();
 app.use(express.json());
@@ -21,7 +20,6 @@ mongoose
     });
 
 app.use("/auth", authRoutes);
-
 //Error Handler
 app.use(errorHandler);
 
