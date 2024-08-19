@@ -1,11 +1,11 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import db from '../models/index.js';
-import { sendEmail } from "../utils/sendEmail.js";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User.js");
+const db = require('../models/index.js');
+const { sendEmail } = require("../utils/sendEmail.js");
 
 // Signup
-export const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {
   const { firstName, lastName, email, password, contact, gender, country } = req.body;
   try {
     const alreadyExist = await db.User.findOne({ where: { email } });
@@ -48,7 +48,7 @@ export const signup = async (req, res, next) => {
 };
 
 // Login
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await db.User.findOne({ where: { email } });
@@ -71,7 +71,7 @@ export const login = async (req, res, next) => {
 };
 
 // Profile
-export const me = async (req, res, next) => {
+const me = async (req, res, next) => {
   const { id } = req.body;
   try {
     const user = await db.User.findByPk(id);
@@ -93,7 +93,7 @@ export const me = async (req, res, next) => {
 };
 
 // Forget Password
-export const forgetPassword = async (req, res, next) => {
+const forgetPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
     const user = await db.User.findOne({ where: { email } });
@@ -121,7 +121,7 @@ export const forgetPassword = async (req, res, next) => {
 };
 
 // Reset Password
-export const resetPassword = async (req, res, next) => {
+const resetPassword = async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
   try {
     const user = await db.User.findOne({ where: { email } });
@@ -150,4 +150,12 @@ export const resetPassword = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+module.exports = {
+  signup,
+  login,
+  me,
+  forgetPassword,
+  resetPassword,
 };
