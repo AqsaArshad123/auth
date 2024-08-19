@@ -1,44 +1,30 @@
-import mongoose from "mongoose";
+'use strict';
+import { Model, DataTypes } from 'sequelize';
 
-const userSchema = mongoose.Schema(
-  {
-    firstName: {
-      type: String,
-      required: true,
-    },
-    lastName: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    contact: {
-      type: String,
-      required: true,
-    },
-    gender: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
-    otp: String,
-    otpExpiration: {
-      type: Date,
-    },
-  },
-  { timestamps: true }
-);
-
-const User = mongoose.model("User", userSchema);
-
-export default User;
+export default (sequelize) => {
+  class User extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
+    }
+  }
+  User.init({
+    firstName: DataTypes.STRING,
+    lastName: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password: DataTypes.STRING,
+    contact: DataTypes.STRING,
+    gender: DataTypes.STRING,
+    country: DataTypes.STRING,
+    otp: DataTypes.STRING,
+    otpExpiration: DataTypes.DATE
+  }, {
+    sequelize,
+    modelName: 'User',
+  });
+  return User;
+};

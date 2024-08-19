@@ -1,20 +1,21 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import db from '../models/index.js';
 import { sendEmail } from "../utils/sendEmail.js";
 
 // Signup
 export const signup = async (req, res, next) => {
   const { firstName, lastName, email, password, contact, gender, country } = req.body;
   try {
-    const alreadyExist = await User.findOne({ email });
+    const alreadyExist = await db.User.findOne({ where: { email } });
     if (alreadyExist) {
       return res.status(400).json({ message: "User already exists!" });
     }
     // Hashing Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await User.create({
+    const user = await db.User.create({
       firstName,
       lastName,
       email,
@@ -50,7 +51,7 @@ export const signup = async (req, res, next) => {
 export const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await db.User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -73,7 +74,7 @@ export const login = async (req, res, next) => {
 export const me = async (req, res, next) => {
   const { id } = req.body;
   try {
-    const user = await User.findById(id);
+    const user = await db.User.findByPk(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -95,7 +96,7 @@ export const me = async (req, res, next) => {
 export const forgetPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await db.User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -123,7 +124,7 @@ export const forgetPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await db.User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
