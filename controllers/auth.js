@@ -1,13 +1,13 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import User from "../models/User.js";
-import { sendEmail } from "../utils/sendEmail.js";
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const { User } = require("../db/models/index.js");
+const { sendEmail } = require("../utils/sendEmail.js");
 
 // Signup
-export const signup = async (req, res, next) => {
+const signup = async (req, res, next) => {
   const { firstName, lastName, email, password, contact, gender, country } = req.body;
   try {
-    const alreadyExist = await User.findOne({ email });
+    const alreadyExist = await User.findOne({ where: { email } });
     if (alreadyExist) {
       return res.status(400).json({ message: "User already exists!" });
     }
@@ -25,7 +25,7 @@ export const signup = async (req, res, next) => {
     });
     const token = jwt.sign(
       {
-        _id: user._id,
+        _id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -36,7 +36,7 @@ export const signup = async (req, res, next) => {
     res.status(201).json({
       token,
       user: {
-        _id: user._id,
+        _id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
       },
@@ -47,10 +47,10 @@ export const signup = async (req, res, next) => {
 };
 
 // Login
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -59,7 +59,7 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
     const token = jwt.sign(
-      { _id: user._id, name: user.name, email: user.email },
+      { _id: user.id, name: user.name, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -70,15 +70,15 @@ export const login = async (req, res, next) => {
 };
 
 // Profile
-export const me = async (req, res, next) => {
+const me = async (req, res, next) => {
   const { id } = req.body;
   try {
-    const user = await User.findById(id);
+    const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
-      _id: user._id,
+      _id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -92,10 +92,10 @@ export const me = async (req, res, next) => {
 };
 
 // Forget Password
-export const forgetPassword = async (req, res, next) => {
+const forgetPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -120,10 +120,10 @@ export const forgetPassword = async (req, res, next) => {
 };
 
 // Reset Password
-export const resetPassword = async (req, res, next) => {
+const resetPassword = async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -149,4 +149,12 @@ export const resetPassword = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+module.exports = {
+  signup,
+  login,
+  me,
+  forgetPassword,
+  resetPassword,
 };

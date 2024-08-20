@@ -1,6 +1,6 @@
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); 
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -11,9 +11,9 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendEmail = async (to, subject, text) => {
+module.exports.sendEmail = async (to, subject, text) => {
   const mailOptions = {
-    from: '"Authenticatoin App" <auth@ethereal.email>',
+    from: '"Authentication App" <auth@ethereal.email>',
     to,
     subject,
     text,
