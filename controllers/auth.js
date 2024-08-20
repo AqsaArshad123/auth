@@ -1,21 +1,20 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User.js");
-const db = require('../models/index.js');
+const { User } = require('../models');
 const { sendEmail } = require("../utils/sendEmail.js");
 
 // Signup
 const signup = async (req, res, next) => {
   const { firstName, lastName, email, password, contact, gender, country } = req.body;
   try {
-    const alreadyExist = await db.User.findOne({ where: { email } });
+    const alreadyExist = await User.findOne({ where: { email } });
     if (alreadyExist) {
       return res.status(400).json({ message: "User already exists!" });
     }
     // Hashing Password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = await db.User.create({
+    const user = await User.create({
       firstName,
       lastName,
       email,
@@ -26,7 +25,7 @@ const signup = async (req, res, next) => {
     });
     const token = jwt.sign(
       {
-        _id: user._id,
+        _id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -37,7 +36,7 @@ const signup = async (req, res, next) => {
     res.status(201).json({
       token,
       user: {
-        _id: user._id,
+        _id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
       },
@@ -51,7 +50,7 @@ const signup = async (req, res, next) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
-    const user = await db.User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -60,7 +59,7 @@ const login = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
     const token = jwt.sign(
-      { _id: user._id, name: user.name, email: user.email },
+      { _id: user.id, name: user.name, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
@@ -74,12 +73,12 @@ const login = async (req, res, next) => {
 const me = async (req, res, next) => {
   const { id } = req.body;
   try {
-    const user = await db.User.findByPk(id);
+    const user = await User.findByPk(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
-      _id: user._id,
+      _id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -96,7 +95,7 @@ const me = async (req, res, next) => {
 const forgetPassword = async (req, res, next) => {
   const { email } = req.body;
   try {
-    const user = await db.User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -124,7 +123,7 @@ const forgetPassword = async (req, res, next) => {
 const resetPassword = async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
   try {
-    const user = await db.User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
