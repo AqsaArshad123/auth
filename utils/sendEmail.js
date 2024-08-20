@@ -1,3 +1,5 @@
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); 
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
