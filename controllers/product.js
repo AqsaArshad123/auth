@@ -1,4 +1,4 @@
-const Product = require("../db/models/Product.js");
+const { Product } = require("../db/models/index.js");
 
 const createProduct = async (req, res, next) => {
     const { name, price, description, manufacturer, stock } = req.body;
@@ -28,7 +28,7 @@ const getProducts = async (req, res, next) => {
 const getProductById = async (req, res, next) => {
     const { id } = req.body;
     try {
-        const product = await Product.findByPK(id);
+        const product = await Product.findByPk(id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
@@ -41,14 +41,42 @@ const getProductById = async (req, res, next) => {
 const deleteProduct = async (req, res, next) => {
     const { id } = req.body;
     try {
-        const product = await Product.findByPK(id);
+        const product = await Product.findByPk(id);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
         }
-        await product.remove();
+        await product.destroy();
         res.status(200).json({ message: "Product deleted successfully" });
     } catch (error) {
         next(error);
     }
 };
 
+const updateProduct = async (req, res, next) => {
+    const { id } = req.params;
+    const { name, price, description, manufacturer, stock } = req.body;
+    try {
+        const product = await Product.findByPk(id);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        await product.update({
+            name,
+            price,
+            description,
+            manufacturer,
+            stock,
+        });
+        res.status(200).json({message:"Product updated succesfully"});
+    }catch (error) {
+        next(error);
+      }
+};
+
+module.exports = {
+    createProduct,
+    getProducts,
+    getProductById,
+    deleteProduct,
+    updateProduct,
+};
