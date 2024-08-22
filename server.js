@@ -1,15 +1,13 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const authRoutes = require("./routes/auth.js");
-const productRoutes = require("./routes/product.js");
+const routes = require("./routes/index.js");
 const { errorHandler } = require("./middleware/errorHandler.js");
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
-app.use("/auth", authRoutes);
-app.use("/product", productRoutes);
+app.use("/api", routes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

@@ -10,10 +10,10 @@ const authMiddleware = require("../middleware/auth.js");
 
 const router = express.Router();
 
-router.post("/create", authMiddleware, createProduct);
-router.get("/getAll", getProducts);
-router.get("/getById", getProductById);
-router.delete("/delete", authMiddleware, deleteProduct);
-router.put("/update/:id", authMiddleware, updateProduct);
+router.post("/", authMiddleware, createProduct);
+router.get("/", getProducts);
+router.get("/:id", getProductById);
+router.delete("/:id", authMiddleware, deleteProduct);
+router.put("/:id", authMiddleware, updateProduct);
 
 module.exports = router;
