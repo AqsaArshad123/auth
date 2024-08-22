@@ -26,7 +26,7 @@ const getProducts = async (req, res, next) => {
 };
 
 const getProductById = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const product = await Product.findByPk(id);
     if (!product) {
@@ -39,7 +39,7 @@ const getProductById = async (req, res, next) => {
 };
 
 const deleteProduct = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
   try {
     const product = await Product.findByPk(id);
     if (!product) {
