@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { User } = require("../db/models/index.js");
-const { sendEmail } = require("../utils/sendEmail.js");
+const { User } = require("../db/models/index");
+const { sendEmail } = require("../utils/sendEmail");
 
 // Signup
 const signup = async (req, res, next) => {
@@ -71,14 +71,14 @@ const login = async (req, res, next) => {
 
 // Profile
 const me = async (req, res, next) => {
-  const { id } = req.body;
+  const { _id } = req.user;
   try {
-    const user = await User.findByPk(id);
+    const user = await User.findByPk(_id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.status(200).json({
-      _id: user.id,
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
