@@ -1,4 +1,4 @@
-const { Product } = require("../db/models/index.js");
+const { Product } = require("../db/models/index");
 
 const createProduct = async (req, res, next) => {
   const { name, price, description, manufacturer, stock } = req.body;

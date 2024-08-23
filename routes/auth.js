@@ -5,14 +5,14 @@ const {
   me,
   forgetPassword,
   resetPassword,
-} = require("../controllers/auth.js");
+} = require("../controllers/auth");
 const {
   validateSignup,
   validateLogin,
   validateNewPassword,
   validateRequest,
-} = require("../middleware/validators/auth.js");
-const authMiddleware = require("../middleware/auth.js");
+} = require("../middleware/validators/auth");
+const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
 
