@@ -5,7 +5,8 @@ const { sendEmail } = require("../utils/sendEmail");
 
 // Signup
 const signup = async (req, res, next) => {
-  const { firstName, lastName, email, password, contact, gender, country } = req.body;
+  const { firstName, lastName, email, password, contact, gender, country } =
+    req.body;
   try {
     const alreadyExist = await User.findOne({ where: { email } });
     if (alreadyExist) {
