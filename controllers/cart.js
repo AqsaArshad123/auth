@@ -1,8 +1,14 @@
 const { Cart, Product } = require("../db/models/index");
 
 const createCart = async (req, res, next) => {
-  const { userId } = req.body;
+  const { _id: userId } = req.user;
   try {
+    const existingCart = await Cart.findOne({ where: { userId } });
+    if (existingCart) {
+      return res
+        .status(200)
+        .json({ message: "Cart already exists", cart: existingCart });
+    }
     const cart = await Cart.create({ userId, productIds: [] });
     res.status(201).json(cart);
   } catch (error) {
@@ -10,8 +16,8 @@ const createCart = async (req, res, next) => {
   }
 };
 
-const getCartByUserId = async (req, res, next) => {
-  const { userId } = req.params;
+const getCartDetails = async (req, res, next) => {
+  const { _id: userId } = req.user;
   try {
     const cart = await Cart.findOne({ where: { userId } });
     if (!cart) {
@@ -24,7 +30,7 @@ const getCartByUserId = async (req, res, next) => {
 };
 
 const addToCart = async (req, res, next) => {
-  const { userId } = req.params;
+  const { _id: userId } = req.user;
   const { productId } = req.body;
   try {
     const cart = await Cart.findOne({ where: { userId } });
@@ -41,14 +47,14 @@ const addToCart = async (req, res, next) => {
       { where: { id: cart.id } }
     );
 
-    res.status(200).json({ message: "Product added to cart", cart });
+    res.status(200).json({ message: "Product added to cart" });
   } catch (error) {
     next(error);
   }
 };
 
 const removeFromCart = async (req, res, next) => {
-  const { userId } = req.params;
+  const { _id: userId } = req.user;
   const { productId } = req.body;
   try {
     const cart = await Cart.findOne({ where: { userId } });
@@ -65,7 +71,7 @@ const removeFromCart = async (req, res, next) => {
       { where: { id: cart.id } }
     );
 
-    res.status(200).json({ message: "Product removed from cart", cart });
+    res.status(200).json({ message: "Product removed from cart" });
   } catch (error) {
     next(error);
   }
@@ -73,7 +79,7 @@ const removeFromCart = async (req, res, next) => {
 
 module.exports = {
   createCart,
-  getCartByUserId,
+  getCartDetails,
   addToCart,
   removeFromCart,
 };
