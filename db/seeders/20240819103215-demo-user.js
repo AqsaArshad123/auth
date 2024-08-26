@@ -2,7 +2,7 @@
 const bcrypt = require("bcryptjs");
 
 module.exports = {
-  up: async (queryInterface, Sequelize) => {
+  up: async (queryInterface) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash("abcabcA123", salt);
 
@@ -23,7 +23,7 @@ module.exports = {
     ]);
   },
 
-  down: (queryInterface, Sequelize) => {
+  down: (queryInterface) => {
     return queryInterface.dropTable("Users");
   },
 };
