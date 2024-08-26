@@ -10,9 +10,7 @@
     "migrate": "npx sequelize-cli db:migrate",
     "seed": "npx sequelize-cli db:seed:all",
     "migrate:undo": "npx sequelize-cli db:migrate:undo",
-    "seed:undo": "npx sequelize-cli db:seed:undo",
-    "lint": "eslint '**/*.js'",
-    "format": "prettier --write '**/*.js'"
+    "seed:undo": "npx sequelize-cli db:seed:undo"
   },
   "keywords": [],
   "author": "",
@@ -35,7 +33,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
-    "eslint": "^9.9.0",
+    "eslint": "^9.9.1",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
     "globals": "^15.9.0",
