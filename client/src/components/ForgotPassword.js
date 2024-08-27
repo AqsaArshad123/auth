@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { forgotPassword } from '../apis/api.js';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { forgotPassword } from "../apis/api.js";
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
 
   const handleSendOtp = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await forgotPassword({ email });
-    setMessage(response.data.message);
-    setOtpSent(true);
-  } catch (error) {
-    console.error('Failed to send OTP', error);
-    setMessage('Failed to send OTP. Please try again.');
-  }
-};
+    e.preventDefault();
+    try {
+      const response = await forgotPassword({ email });
+      setMessage(response.data.message);
+      setOtpSent(true);
+    } catch (error) {
+      console.error("Failed to send OTP", error);
+      setMessage("Failed to send OTP. Try again!");
+    }
+  };
 
   return (
     <form onSubmit={handleSendOtp}>
@@ -33,8 +33,11 @@ const ForgotPassword = () => {
       />
       <button type="submit">Send OTP</button>
       {message && <p>{message}</p>}
-      {otpSent && <button onClick={() => navigate('/reset-password', { state: { email } })}>Next</button>}
+      {otpSent && (
+        <button onClick={() => navigate("/reset-password")}>Next</button>
+      )}
     </form>
   );
 };
+
 export default ForgotPassword;

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { signup } from '../apis/api.js';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { signup } from "../apis/api.js";
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -13,26 +13,26 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-    const handleSignup = async (e) => {
-      e.preventDefault();
+  const handleSignup = async (e) => {
+    e.preventDefault();
 
-      const userData = {
-        firstName,
-        lastName,
-        email,
-        password,
-        contact,
-        gender,
-        country
-      };
-
-      try {
-        await signup(userData);
-        navigate('/login');
-      } catch (error) {
-        console.error('Signup failed', error);
-      }
+    const userData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      contact,
+      gender,
+      country,
     };
+
+    try {
+      await signup(userData);
+      navigate("/login");
+    } catch (error) {
+      console.error("Signup failed", error);
+    }
+  };
 
   return (
     <form onSubmit={handleSignup}>
