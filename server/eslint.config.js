@@ -17,6 +17,7 @@ module.exports = [
   {
     rules: {
       "prettier/prettier": "error",
+      "linebreak-style": "off",
     },
     plugins: {
       prettier: require("eslint-plugin-prettier"),
