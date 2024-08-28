@@ -1,28 +1,27 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Login from "./components/Login.js";
-import Signup from "./components/Signup.js";
-import ForgotPassword from "./components/ForgotPassword.js";
-import ResetPassword from "./components/ResetPassword.js";
-import Home from "./components/Home.js";
-import ProductDetail from "./components/ProductDetail";
-import ProductManagement from "./components/ProductManagement";
+import HomePage from "./pages/Home.js";
+import ProductPage from "./pages/ProductDetail.js";
+import ManageProductsPage from "./pages/ManageProducts.js";
+import ProfilePage from "./pages/Profile.js";
+import AuthPages from "./pages/Auth.js";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/manage-products" element={<ProductManagement />} />
+        <Route path="/" element={<AuthPages.Login />} />
+        <Route path="/signup" element={<AuthPages.Signup />} />
+        <Route path="/forgot-password" element={<AuthPages.ForgotPassword />} />
+        <Route path="/reset-password" element={<AuthPages.ResetPassword />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/product-details" element={<ProductPage />} />
+        <Route path="/manage-products" element={<ManageProductsPage />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
+

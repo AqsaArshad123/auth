@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../apis/api.js";
+import { login } from "../../apis/api.js";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("zunaira@gmail.com");
+  const [password, setPassword] = useState("zunairaZ123");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {

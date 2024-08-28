@@ -4,14 +4,44 @@ const API = axios.create({
   baseURL: "http://localhost:5000/api",
 });
 
+//Authentication
 export const login = (credentials) => API.post("/auth/login", credentials);
 export const signup = (data) => API.post("/auth/signup", data);
-export const getMe = () => API.get("/auth/me");
+export const getMe = () => {
+  const token = localStorage.getItem("token");
+  return API.get("/auth/me", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
 export const forgotPassword = (data) => API.post("/auth/forgot-password", data);
 export const resetPassword = (data) => API.put("/auth/reset-password", data);
 
+//Products
 export const getProducts = () => API.get("/products");
 export const getProductById = (id) => API.get(`/products/${id}`);
-export const createProduct = (data) => API.post("/products", data);
-export const updateProduct = (id, data) => API.put(`/products/${id}`, data);
-export const deleteProduct = (id) => API.delete(`/products/${id}`);
+export const createProduct = (data) => {
+  const token = localStorage.getItem("token");
+  return API.post("/products", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const updateProduct = (id, data) => {
+  const token = localStorage.getItem("token");
+  return API.put(`/products/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+export const deleteProduct = (id) => {
+  const token = localStorage.getItem("token");
+  return API.delete(`/products/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

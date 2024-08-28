@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { resetPassword } from "../apis/api.js";
+import { resetPassword } from "../../apis/api.js";
 import { useNavigate } from "react-router-dom";
 
 const ResetPassword = () => {
@@ -14,7 +14,7 @@ const ResetPassword = () => {
     try {
       await resetPassword({ email, otp, newPassword });
       setMessage("Password has been reset Successfully!");
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       console.error("Failed to reset password", error);
       setMessage("Failed to reset password. Try again!");
