@@ -9,7 +9,7 @@ const createCart = async (req, res, next) => {
         .status(200)
         .json({ message: "Cart already exists", cart: existingCart });
     }
-    const cart = await Cart.create({ userId, productIds: [] });
+    const cart = await Cart.create({ userId, products: [] });
     res.status(201).json(cart);
   } catch (error) {
     next(error);
@@ -19,11 +19,14 @@ const createCart = async (req, res, next) => {
 const getCartDetails = async (req, res, next) => {
   const { _id: userId } = req.user;
   try {
-    const cart = await Cart.findOne({ where: { userId } });
+    let cart = await Cart.findOne({ where: { userId } });
     if (!cart) {
-      return res.status(404).json({ message: "Cart not Found" });
+      cart = await Cart.create({ userId, productIds: [] });
+      return res.status(201).json(cart);
     }
-    res.status(200).json(cart);
+    const products = await Product.findAll({ where: { id: cart.productIds } });
+
+    res.json({ ...cart.toJSON(), products });
   } catch (error) {
     next(error);
   }

@@ -47,35 +47,24 @@ export const deleteProduct = (id) => {
 };
 
 //Cart 
-export const createCart = () => {
-  const token = localStorage.getItem("token");
-  return API.post("/cart", {}, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-export const getCart = () => {
-  const token = localStorage.getItem("token");
-  return API.get("/cart", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-export const addToCart = (productId) => {
-  const token = localStorage.getItem("token");
-  return API.post(`/cart/add`, { productId }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
-export const removeFromCart = (productId) => {
-  const token = localStorage.getItem("token");
-  return API.post(`/cart/remove`, { productId }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-};
+const token = localStorage.getItem("token");
+
+export const createCart = () =>
+  API.post("/cart", {}, { headers: { Authorization: `Bearer ${token}` } });
+
+export const getCart = () =>
+  API.get("/cart", { headers: { Authorization: `Bearer ${token}` } });
+
+export const addToCart = (productId) =>
+  API.post(
+    `/cart/add`,
+    { productId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+
+export const removeFromCart = (productId) =>
+  API.patch(
+    `/cart/remove`,
+    { productId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );

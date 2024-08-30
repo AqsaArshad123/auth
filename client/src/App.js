@@ -5,7 +5,7 @@ import ProductPage from "./pages/ProductDetail.js";
 import ManageProductsPage from "./pages/ManageProducts.js";
 import ProfilePage from "./pages/Profile.js";
 import AuthPages from "./pages/Auth.js";
-//import Cart from "./pages/Cart.js";
+import CartPage from './pages/Cart.js';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/product-details" element={<ProductPage />} />
         <Route path="/manage-products" element={<ManageProductsPage />} />
-        {/* <Route path="/cart" element={<Cart />} /> */}
+        <Route path="/cart" element={<CartPage />} />
       </Routes>
     </Router>
   );

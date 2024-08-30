@@ -4,19 +4,38 @@ import { getProducts,addToCart, createCart, getCart } from "../../apis/api.js";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProducts = async () => {
+  const token = localStorage.getItem("token");
+
+ useEffect(() => {
+    const initializeCart = async () => {
       try {
+        const cartResponse = await getCart(token);
+        if (cartResponse.status === 404) {
+          const newCart = await createCart(token);
+          setCart(newCart.data);
+        } else {
+          setCart(cartResponse.data);
+        }
+      } catch (error) {
+        console.error("Error initializing cart", error);
+      }
+    };
+    initializeCart();
+    fetchProducts();
+  }, );
+
+  const fetchProducts = async () => {
+    try {
         const response = await getProducts();
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products", error);
       }
     };
-    fetchProducts();
-  }, []);
+    
 
   const handleSearch = () => {
     navigate("/product-details");
@@ -32,7 +51,7 @@ const Home = () => {
 
   const handleAddToCart = async (productId) => {
     try {
-      await addToCart(productId);
+      await addToCart(productId, token);
       alert("Product added to cart");
     } catch (error) {
       console.error("Error adding to cart", error);
@@ -42,12 +61,12 @@ const Home = () => {
 
   const handleViewCart = async () => {
     try {
-      const response = await getCart();
+      const response = await getCart(token);
       if (response.data) {
         navigate("/cart");
       } else {
         alert("No cart found, creating a cart");
-        await createCart();
+        await createCart(token);
         navigate("/cart");
       }
     } catch (error) {
@@ -72,7 +91,7 @@ const Home = () => {
             <p>Stock: {product.stock}</p>
             <button onClick={() => handleAddToCart(product.id)}>
               Add to cart
-              </button>
+            </button>
           </div>
         ))}
       </div>
