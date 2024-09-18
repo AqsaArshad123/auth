@@ -94,9 +94,12 @@ const me = async (req, res, next) => {
 
 // Forget Password
 const forgetPassword = async (req, res, next) => {
-  const { email } = req.body;
+  const email = req.body.email;
+  console.log(req.body);
+  const trimmedEmail = typeof email === "string" ? email.trim() : email;
+
   try {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email: trimmedEmail } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
